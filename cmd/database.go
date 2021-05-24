@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // databaseCmd represents the database command
@@ -29,7 +29,7 @@ var databaseCmd = &cobra.Command{
 
 migrate - Migrate the database models`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("database called")
+		log.Info("Database subcommand")
 	},
 }
 

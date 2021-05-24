@@ -16,9 +16,12 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/mitchellh/mapstructure"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/aeekayy/go-api-base/pkg/database"
 )
 
 // databaseMigrateCmd represents the migrate command
@@ -32,7 +35,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("migrate called")
+		log.Info("Starting database migration")
+
+		dbConfig := database.NewConfig()
+
+		// setup the database pool
+		importDbConfig := viper.GetStringMap("db")
+		mapstructure.Decode(&importDbConfig, &dbConfig)
+		err := database.MigrateDatabase(nil, dbConfig)
+
+		if err != nil {
+			log.Errorf("Migration error: ", err)
+		}
 	},
 }
 
