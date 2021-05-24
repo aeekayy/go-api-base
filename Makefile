@@ -17,7 +17,7 @@ define BUILD_MANIFEST
 git_repo: ${GIT_REPO}
 git_branch: ${GIT_BRANCH}
 git_commit: ${GIT_COMMIT}
-git_owner: VeritoneEnergy
+git_owner: aeekayy
 author: ${GIT_AUTHOR}
 jenkins_url: ${RUN_DISPLAY_URL}
 jenkins_build: ${BUILD_NUMBER}
