@@ -1,0 +1,16 @@
+{
+  "name": "go-api-base",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "serve-go": "(go run main.go server start;)"
+  },
+  "private": true,
+  "devDependencies": {
+    "semantic-release": "17.3.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aeekayy/go-api-base.git"
+  }
+}
