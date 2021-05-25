@@ -45,7 +45,7 @@ to quickly create a Cobra application.`,
 		err := database.MigrateDatabase(nil, dbConfig)
 
 		if err != nil {
-			log.Errorf("Migration error: ", err)
+			log.Errorf("Migration error: %s", err)
 		}
 	},
 }
