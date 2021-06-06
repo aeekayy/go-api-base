@@ -16,13 +16,13 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	handlers "github.com/aeekayy/go-api-base/pkg/api/handlers"
 )
 
 const (
-	allowedOriginHosts = "api.aeekay.co,app.aeekay.co"
+	apiVersion = "v2"
 )
 
 var noCacheHeaders = map[string]string{
@@ -32,6 +32,9 @@ var noCacheHeaders = map[string]string{
 	"X-Accel-Expires": "0",
 }
 
+var allowedOriginHosts = map[string]bool{
+	"app.aeekay.co": true,
+}
 
 type Route struct {
 	Name        string
@@ -70,22 +73,22 @@ func getRoutes(db *gorm.DB) Routes {
 		Route{
 			"Index",
 			"GET",
-			"/v2/",
+			fmt.Sprintf("/%s/", apiVersion),
 			handlers.Index,
 		},
 
 		Route{
 			"Ping",
-			http.MethodGet, 
-			"v2/ping", 
+			http.MethodGet,
+			fmt.Sprintf("/%s/%s", apiVersion, "ping"),
 			pingHandler,
 		},
 
 		Route{
 			"GetEvents",
 			http.MethodGet,
-			"/v2/events",
-			handlers.GetEvents{DB: db, CORS: allowedOriginHosts}.ServeHTTP,
-		}, 
+			fmt.Sprintf("/%s/%s", apiVersion, "events"),
+			handlers.GetEvents{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
 	}
 }

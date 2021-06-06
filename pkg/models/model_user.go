@@ -13,14 +13,14 @@ package models
 import (
 	"time"
 
-	"github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 )
 
 type User struct {
-	UserID uuid.UUID `json:"user_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
-	Username string `json:"username,omitempty" gorm:"type:varchar(256);"`
-	Kvp postgres.Jsonb `json:"kvp" gorm:"default:'{}'"`
-	CreatedDateTime time.Time `json:"created_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
-	UpdatedDateTime time.Time `json:"updated_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
+	UserID          uuid.UUID      `json:"user_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
+	Username        string         `json:"username,omitempty" gorm:"type:varchar(256);"`
+	Kvp             datatypes.JSON `json:"kvp" gorm:"default:'{}'"`
+	CreatedDateTime time.Time      `json:"created_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
+	UpdatedDateTime time.Time      `json:"updated_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
 }

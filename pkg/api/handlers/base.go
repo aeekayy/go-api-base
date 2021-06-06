@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	//log "github.com/sirupsen/logrus"
 )
 
@@ -11,15 +11,17 @@ import (
 type BaseHandler struct {
 	http.Handler
 
-	Name		string
-	Category	string
+	Name     string
+	Category string
 
-	DB		*gorm.DB
+	DB   *gorm.DB
+	CORS map[string]bool
 }
 
-func NewBaseHandler(db *gorm.DB) BaseHandler {
+func NewBaseHandler(db *gorm.DB, cors map[string]bool) BaseHandler {
 	return BaseHandler{
-		DB:	db,
+		DB:   db,
+		CORS: cors,
 	}
 }
 

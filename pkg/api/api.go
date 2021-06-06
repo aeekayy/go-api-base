@@ -9,8 +9,8 @@ import (
 
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 
 	"github.com/aeekayy/go-api-base/pkg/api/handlers"
 	"github.com/spf13/viper"

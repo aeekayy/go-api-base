@@ -3,9 +3,9 @@ package database
 import (
 	"fmt"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres" // using postgres sql
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres" // using postgres sql
+	"gorm.io/gorm"
 
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
@@ -23,12 +23,12 @@ func SetupDatabase(config *DBConfig) (*gorm.DB, error) {
 
 	log.Infof("conname is\t\t%s", prosgret_conname)
 
-	db, err := gorm.Open("postgres", prosgret_conname)
+	db, err := gorm.Open(postgres.Open(prosgret_conname), &gorm.Config{})
 	if err != nil {
 		log.Error("Failed to connect to database!")
-		return nil, err 
+		return nil, err
 	}
-	
+
 	log.Info("Connected to the database")
 
 	log.Infof("Auto-migrate is set to %+v", config.AutoMigrate)
@@ -57,7 +57,7 @@ func MigrateDatabase(sqlDB *gorm.DB, config *DBConfig) error {
 
 		log.Infof("conname is\t\t%s", prosgret_conname)
 
-		sqlDB, err = gorm.Open("postgres", prosgret_conname)
+		sqlDB, err = gorm.Open(postgres.Open(prosgret_conname), &gorm.Config{})
 		if err != nil {
 			log.Error("Error detected with the migration")
 			return err

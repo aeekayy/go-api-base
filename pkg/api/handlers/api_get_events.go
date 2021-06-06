@@ -14,54 +14,46 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
 
 const (
-	getEventsQueryCols = "event_id,name,kvp,created_date_time,updated_date_time"
+	getEventsQueryCols         = "event_id,name,kvp,created_date_time,updated_date_time"
 	getEventsQueryDistinctCols = "service_id,environment_id"
-	getEventsQueryTableName = "events"
+	getEventsQueryTableName    = "events"
 )
 
 type GetEvents struct {
-	http.Handler
-	Name		string
-	Category	string
-	DB			*gorm.DB
-	CORS		string
+	BaseHandler
 }
 
 type GetEventsRequest struct {
-	Limit		int			`json:"limit" yaml:"limit"`
+	Limit int `json:"limit" yaml:"limit"`
 }
 
 type GetEventsResponse struct {
-	Status			int		`json:"status" yaml:"status"`
-	Data			[]models.Event	`json:"data" yaml:"data"`
+	Status int            `json:"status" yaml:"status"`
+	Data   []models.Event `json:"data" yaml:"data"`
 }
-
 
 func (h GetEvents) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Name = "GetEventsRoute"
 	h.Category = CategoryEvent
 
-	//var req GetEventsRequest
+	allowedOrigin, err := ReturnAccessControlAllowOrigin(h.CORS, r.Header.Get("Origin"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "app.aeekay.co")
+	w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if r.Method == http.MethodOptions {
 		return
 	}
-
-	/*err := json.NewDecoder(r.Body).Decode(&req)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }*/
 
 	// retrieve the result
 	var getEvents []models.Event
@@ -73,16 +65,16 @@ func (h GetEvents) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// wrap the result in a response
 	resp := GetEventsResponse{
 		Status: http.StatusOK,
-		Data: getEvents,
+		Data:   getEvents,
 	}
 
 	respJson, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Could not retrieve event errors")
 		http.Error(w, "Could not retrieve data", http.StatusUnprocessableEntity)
-        return
+		return
 	}
-		
-	w.WriteHeader(http.StatusOK)	
+
+	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(respJson))
 }
