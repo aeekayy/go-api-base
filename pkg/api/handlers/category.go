@@ -2,6 +2,7 @@ package handlers
 
 // Categories for handlers
 const (
-	CategoryEvent			= "Event"
-	CategoryUser			= "User"
+	CategoryAuth  = "Auth"
+	CategoryEvent = "Event"
+	CategoryUser  = "User"
 )
