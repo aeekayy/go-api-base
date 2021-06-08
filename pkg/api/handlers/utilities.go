@@ -10,12 +10,14 @@ const (
 	allowedOriginHosts = "app.aeekay.co"
 )
 
-func ReturnAccessControlAllowOrigin(cors map[string]bool, checkUrl string) (string, error) {
+// ReturnAccessControlAllowOrigin returns the appropriate Access-Control-Allow-Origin
+// based on a map of acceptable domains
+func ReturnAccessControlAllowOrigin(cors map[string]bool, checkURL string) (string, error) {
 	if len(cors) == 0 {
 		return "", errors.New("Invalid Access-Control-Allow-Origin string entered")
 	}
 
-	u, err := url.Parse(checkUrl)
+	u, err := url.Parse(checkURL)
 
 	if err != nil {
 		return "", err
@@ -38,6 +40,13 @@ func ReturnAccessControlAllowOrigin(cors map[string]bool, checkUrl string) (stri
 		}
 		return host, nil
 	}
+
+	// ignore for localhost
+	if u.Hostname() == "localhost" {
+		return checkURL, nil
+	}
+
+	fmt.Println(u.Hostname())
 
 	return "", errors.New("Access-Control-Allow-Origin not found")
 }
