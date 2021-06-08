@@ -14,8 +14,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
-	"gorm.io/gorm/clause"
 
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
@@ -35,9 +35,14 @@ type PostLoginRequest struct {
 	Password string `json:"password" yaml:"password"`
 }
 
+type PostLoginResponseData struct {
+	Username string `json:"username" yaml:"username"`
+	Token    string `json:"token" yaml:"token"`
+}
+
 type PostLoginResponse struct {
-	Status int           `json:"status" yaml:"status"`
-	Data   []models.User `json:"data" yaml:"data"`
+	Status int                   `json:"status" yaml:"status"`
+	Data   PostLoginResponseData `json:"data" yaml:"data"`
 }
 
 func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +50,7 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Category = CategoryAuth
 
 	var req PostLoginRequest
-	var users []models.User
+	var user models.User
 
 	allowedOrigin, err := ReturnAccessControlAllowOrigin(h.CORS, r.Header.Get("Origin"))
 	if err != nil {
@@ -71,30 +76,28 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := CreateToken(user.ID)
+	token, err := CreateToken(user.UserID.String())
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
 	// retrieve the result
-	h.DB.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "username"}},
-		DoUpdates: clause.AssignmentColumns([]string{"updated_date_time"}),
-	}).Select("Username", "Kvp").Create(&user)
-	/*
-		 if err := h.DB.Raw("select " + postLoginQueryCols + " from " + postLoginQueryTableName + ";").Scan(&postLogin).Error; err != nil {
-			 http.Error(w, "Query error", http.StatusBadRequest)
-			 return
-		 }*/
+	if err := h.DB.Raw("select "+postLoginQueryCols+" from "+postLoginQueryTableName+" WHERE username = ?;", req.Username).Scan(&user).Error; err != nil {
+		http.Error(w, "Query error", http.StatusBadRequest)
+		return
+	}
 
-	// append the pipeline
-	users = append(users, user)
+	// create data response
+	response := PostLoginResponseData{
+		Username: req.Username,
+		Token:    token,
+	}
 
 	// wrap the result in a response
 	resp := PostLoginResponse{
 		Status: http.StatusOK,
-		Data:   users,
+		Data:   response,
 	}
 
 	respJson, err := json.Marshal(resp)
@@ -106,4 +109,8 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(respJson))
+}
+
+func CreateToken(username string) (string, error) {
+	return uuid.NewString(), nil
 }

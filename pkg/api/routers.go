@@ -90,5 +90,12 @@ func getRoutes(db *gorm.DB) Routes {
 			fmt.Sprintf("/%s/%s", apiVersion, "events"),
 			handlers.GetEvents{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
 		},
+
+		Route{
+			"Login",
+			http.MethodPost,
+			fmt.Sprintf("/%s/%s/%s", apiVersion, "auth", "login"),
+			handlers.PostLogin{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
 	}
 }
