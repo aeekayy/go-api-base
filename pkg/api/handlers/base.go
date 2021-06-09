@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/aeekayy/go-api-base/pkg/config"
 	"gorm.io/gorm"
 	//log "github.com/sirupsen/logrus"
 )
@@ -14,8 +15,9 @@ type BaseHandler struct {
 	Name     string
 	Category string
 
-	DB   *gorm.DB
-	CORS map[string]bool
+	DB     *gorm.DB
+	CORS   map[string]bool
+	Config *config.HTTPConfig
 }
 
 func NewBaseHandler(db *gorm.DB, cors map[string]bool) BaseHandler {

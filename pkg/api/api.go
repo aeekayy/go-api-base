@@ -9,23 +9,38 @@ import (
 
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
 	"github.com/aeekayy/go-api-base/pkg/api/handlers"
+	apiConfig "github.com/aeekayy/go-api-base/pkg/config"
 	"github.com/spf13/viper"
 )
 
 type Server struct {
 	*http.Server
 	DB     *gorm.DB
-	Config *Config
+	Config *apiConfig.HTTPConfig
 }
 
-func NewServer(config *Config, db *gorm.DB) (*Server, error) {
+const (
+	JwtExpirationHoursDefault = 3
+)
+
+func NewServer(config *apiConfig.HTTPConfig, db *gorm.DB) (*Server, error) {
 	log.Info("Creating a new server")
 
 	config.EnableCORS = viper.GetBool("http.enable_cors")
+	var jwtConfig apiConfig.JwtConfig
+	importJwtConfig := viper.Get("jwt")
+	mapstructure.Decode(&importJwtConfig, &jwtConfig)
+	config.Jwt = jwtConfig
+
+	if config.Jwt.ExpirationHours == 0 {
+		// set
+		config.Jwt.ExpirationHours = JwtExpirationHoursDefault
+	}
 
 	api, err := AddRouter(config, db)
 	if err != nil {
@@ -53,10 +68,10 @@ func NewServer(config *Config, db *gorm.DB) (*Server, error) {
 	return httpSrv, nil
 }
 
-func AddRouter(config *Config, db *gorm.DB) (*mux.Router, error) {
+func AddRouter(config *apiConfig.HTTPConfig, db *gorm.DB) (*mux.Router, error) {
 	log.Infof("Setting up routers")
 
-	r := NewRouter(db)
+	r := NewRouter(config, db)
 
 	if config.EnableMetrics {
 		log.Info("Prometheus metrics are on")

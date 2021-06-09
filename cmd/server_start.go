@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/aeekayy/go-api-base/pkg/api"
+	"github.com/aeekayy/go-api-base/pkg/config"
 	"github.com/aeekayy/go-api-base/pkg/cron"
 	"github.com/aeekayy/go-api-base/pkg/database"
 )
@@ -43,7 +44,7 @@ to quickly create a Cobra application.`,
 
 		// get the config structs
 		// for the various components
-		apiConfig := api.NewConfig()
+		apiConfig := config.NewHTTPConfig()
 		cronConfig := cron.NewConfig()
 		dbConfig := database.NewConfig()
 

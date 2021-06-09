@@ -19,6 +19,7 @@ import (
 	"gorm.io/gorm"
 
 	handlers "github.com/aeekayy/go-api-base/pkg/api/handlers"
+	"github.com/aeekayy/go-api-base/pkg/config"
 )
 
 const (
@@ -45,8 +46,8 @@ type Route struct {
 
 type Routes []Route
 
-func NewRouter(db *gorm.DB) *mux.Router {
-	routes := getRoutes(db)
+func NewRouter(config *config.HTTPConfig, db *gorm.DB) *mux.Router {
+	routes := getRoutes(config, db)
 
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
@@ -68,7 +69,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!")
 }
 
-func getRoutes(db *gorm.DB) Routes {
+func getRoutes(config *config.HTTPConfig, db *gorm.DB) Routes {
 	return Routes{
 		Route{
 			"Index",
@@ -95,7 +96,7 @@ func getRoutes(db *gorm.DB) Routes {
 			"Login",
 			http.MethodPost,
 			fmt.Sprintf("/%s/%s/%s", apiVersion, "auth", "login"),
-			handlers.PostLogin{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+			handlers.PostLogin{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
 		},
 	}
 }

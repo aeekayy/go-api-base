@@ -14,9 +14,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/aeekayy/go-api-base/pkg/auth"
+	"github.com/aeekayy/go-api-base/pkg/config"
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
 
@@ -76,15 +77,20 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := CreateToken(user.UserID.String())
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-
 	// retrieve the result
 	if err := h.DB.Raw("select "+postLoginQueryCols+" from "+postLoginQueryTableName+" WHERE username = ?;", req.Username).Scan(&user).Error; err != nil {
 		http.Error(w, "Query error", http.StatusBadRequest)
+		return
+	}
+
+	if user.Username == "" {
+		http.Error(w, "Query error", http.StatusBadRequest)
+		return
+	}
+
+	token, err := CreateToken(user.Username, h.Config)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -111,6 +117,19 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(respJson))
 }
 
-func CreateToken(username string) (string, error) {
-	return uuid.NewString(), nil
+func CreateToken(username string, config *config.HTTPConfig) (string, error) {
+	log.Info(username)
+	jwtWrapper := auth.JwtWrapper{
+		SecretKey:       config.Jwt.SecretKey,
+		Issuer:          config.Jwt.Issuer,
+		ExpirationHours: config.Jwt.ExpirationHours,
+	}
+
+	// generate the signed token
+	signedToken, err := jwtWrapper.GenerateToken(username)
+	if err != nil {
+		return "", err
+	}
+
+	return signedToken, nil
 }

@@ -64,8 +64,10 @@ func MigrateDatabase(sqlDB *gorm.DB, config *DBConfig) error {
 		}
 	}
 
-	sqlDB.AutoMigrate(&models.Event{})
+	log.Info("Migrating users")
 	sqlDB.AutoMigrate(&models.User{})
+	log.Info("Migrating events")
+	sqlDB.AutoMigrate(&models.Event{})
 	log.Info("Database migration is complete")
 
 	return nil
