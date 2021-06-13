@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Server represents an API server
 type Server struct {
 	*http.Server
 	DB     *gorm.DB
@@ -25,9 +26,11 @@ type Server struct {
 }
 
 const (
+	// JwtExpirationHoursDefault the default expiration of JWTs in hours
 	JwtExpirationHoursDefault = 3
 )
 
+// NewServer returns a new API server with middleware and route
 func NewServer(config *apiConfig.HTTPConfig, db *gorm.DB) (*Server, error) {
 	log.Info("Creating a new server")
 
@@ -68,6 +71,8 @@ func NewServer(config *apiConfig.HTTPConfig, db *gorm.DB) (*Server, error) {
 	return httpSrv, nil
 }
 
+// AddRouter returns a new router based on the API configuration. Leverages
+// database for handlers
 func AddRouter(config *apiConfig.HTTPConfig, db *gorm.DB) (*mux.Router, error) {
 	log.Infof("Setting up routers")
 

@@ -17,6 +17,7 @@ import (
 	"gorm.io/datatypes"
 )
 
+// User represents a user in the service including username and password
 type User struct {
 	UserID          uuid.UUID      `json:"user_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
 	Username        string         `json:"username,omitempty" gorm:"type:varchar(256);"`

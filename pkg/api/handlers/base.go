@@ -20,6 +20,7 @@ type BaseHandler struct {
 	Config *config.HTTPConfig
 }
 
+// NewBaseHandler returns a new base handler
 func NewBaseHandler(db *gorm.DB, cors map[string]bool) BaseHandler {
 	return BaseHandler{
 		DB:   db,
@@ -27,6 +28,7 @@ func NewBaseHandler(db *gorm.DB, cors map[string]bool) BaseHandler {
 	}
 }
 
+// WriteResponse writes a response back to the user
 func (b *BaseHandler) WriteResponse(w http.ResponseWriter, reqCtx *ReqContext) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	// w.Header().Add("X-Correlation-Id", reqCtx.Correlation)
@@ -38,6 +40,7 @@ func (b *BaseHandler) WriteResponse(w http.ResponseWriter, reqCtx *ReqContext) {
 	//}
 }
 
+// ReqContext object for the context of a request
 type ReqContext struct {
 	ErrorCode   string `json:"errorCode"`
 	ErrorDetail string `json:"errorDetail"`

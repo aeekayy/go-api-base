@@ -10,20 +10,21 @@ import (
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
 
+// SetupDatabase sets up a database connection with DBConfig
 func SetupDatabase(config *DBConfig) (*gorm.DB, error) {
 	// To get the value from the config file using key
 	// viper package read .env
-	viper_user := config.Username
-	viper_password := config.Password
-	viper_db := config.DBName
-	viper_host := config.Host
-	viper_port := config.Port
+	viperUser := config.Username
+	viperPassword := config.Password
+	viperDB := config.DBName
+	viperHost := config.Host
+	viperPort := config.Port
 
-	prosgret_conname := fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v sslmode=disable", viper_host, viper_port, viper_user, viper_db, viper_password)
+	postgresConname := fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v sslmode=disable", viperHost, viperPort, viperUser, viperDB, viperPassword)
 
-	log.Infof("conname is\t\t%s", prosgret_conname)
+	log.Infof("conname is\t\t%s", postgresConname)
 
-	db, err := gorm.Open(postgres.Open(prosgret_conname), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(postgresConname), &gorm.Config{})
 	if err != nil {
 		log.Error("Failed to connect to database!")
 		return nil, err
@@ -40,6 +41,8 @@ func SetupDatabase(config *DBConfig) (*gorm.DB, error) {
 	return db, nil
 }
 
+// MigrateDatabase migrates the database
+// select district models from the models package
 func MigrateDatabase(sqlDB *gorm.DB, config *DBConfig) error {
 	log.Info("Migrating the database")
 	var err error
@@ -47,17 +50,17 @@ func MigrateDatabase(sqlDB *gorm.DB, config *DBConfig) error {
 	if sqlDB == nil {
 		// To get the value from the config file using key
 		// viper package read .env
-		viper_user := config.Username
-		viper_password := config.Password
-		viper_db := config.DBName
-		viper_host := config.Host
-		viper_port := config.Port
+		viperUser := config.Username
+		viperPassword := config.Password
+		viperDB := config.DBName
+		viperHost := config.Host
+		viperPort := config.Port
 
-		prosgret_conname := fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v sslmode=disable", viper_host, viper_port, viper_user, viper_db, viper_password)
+		postgresConname := fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v sslmode=disable", viperHost, viperPort, viperUser, viperDB, viperPassword)
 
-		log.Infof("conname is\t\t%s", prosgret_conname)
+		log.Infof("conname is\t\t%s", postgresConname)
 
-		sqlDB, err = gorm.Open(postgres.Open(prosgret_conname), &gorm.Config{})
+		sqlDB, err = gorm.Open(postgres.Open(postgresConname), &gorm.Config{})
 		if err != nil {
 			log.Error("Error detected with the migration")
 			return err

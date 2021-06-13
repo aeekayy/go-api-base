@@ -25,19 +25,23 @@ const (
 	getEventsQueryTableName    = "events"
 )
 
+// GetEvents object that represents the GET events handler
 type GetEvents struct {
 	BaseHandler
 }
 
+// GetEventsRequest request for GET events
 type GetEventsRequest struct {
 	Limit int `json:"limit" yaml:"limit"`
 }
 
+// GetEventsResponse the response object for GET events
 type GetEventsResponse struct {
 	Status int            `json:"status" yaml:"status"`
 	Data   []models.Event `json:"data" yaml:"data"`
 }
 
+// ServeHTTP the handler for GetEvents
 func (h GetEvents) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Name = "GetEventsRoute"
 	h.Category = CategoryEvent
@@ -68,7 +72,7 @@ func (h GetEvents) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Data:   getEvents,
 	}
 
-	respJson, err := json.Marshal(resp)
+	respJSON, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Could not retrieve event errors")
 		http.Error(w, "Could not retrieve data", http.StatusUnprocessableEntity)
@@ -76,5 +80,5 @@ func (h GetEvents) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(respJson))
+	w.Write([]byte(respJSON))
 }

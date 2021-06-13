@@ -25,19 +25,23 @@ const (
 	postUserQueryTableName = "users"
 )
 
+// PostUser POST user handler for creating a user
 type PostUser struct {
 	BaseHandler
 }
 
+// PostUserRequest request for user
 type PostUserRequest struct {
 	Username string `json:"username" yaml:"username"`
 }
 
+// PostUserResponse handles the response for POST user with status and data
 type PostUserResponse struct {
 	Status int           `json:"status" yaml:"status"`
 	Data   []models.User `json:"data" yaml:"data"`
 }
 
+// ServeHTTP main function for handler
 func (h PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Name = "PostUserRoute"
 	h.Category = CategoryUser
@@ -85,7 +89,7 @@ func (h PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Data:   users,
 	}
 
-	respJson, err := json.Marshal(resp)
+	respJSON, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Could not retrieve event errors")
 		http.Error(w, "Could not retrieve data", http.StatusUnprocessableEntity)
@@ -93,5 +97,5 @@ func (h PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(respJson))
+	w.Write([]byte(respJSON))
 }
