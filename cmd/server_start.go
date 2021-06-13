@@ -18,12 +18,13 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/aeekayy/go-api-base/pkg/api"
+	"github.com/aeekayy/go-api-base/pkg/config"
 	"github.com/aeekayy/go-api-base/pkg/cron"
 	"github.com/aeekayy/go-api-base/pkg/database"
 )
@@ -41,13 +42,13 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("serverStart called")
 
-		// get the config structs 
-		// for the various components 
-		apiConfig := api.NewConfig()
+		// get the config structs
+		// for the various components
+		apiConfig := config.NewHTTPConfig()
 		cronConfig := cron.NewConfig()
 		dbConfig := database.NewConfig()
 
-		// setup the database pool 
+		// setup the database pool
 		importDbConfig := viper.GetStringMap("db")
 		apiConfig.EnableMetrics = viper.GetBool("enable_metrics")
 		mapstructure.Decode(&importDbConfig, &dbConfig)
@@ -59,14 +60,18 @@ to quickly create a Cobra application.`,
 
 		mapstructure.Decode(&importDbConfig, &apiConfig.DB)
 		mapstructure.Decode(&importDbConfig, &cronConfig.DB)
-	
+
 		// move the instantiation of the database here
 		// create a cronJob
 		cronJob := cron.NewCron(cronConfig, db)
 		cronJob.Cron.Start()
 
 		// start the web server
-		api.StartHTTP(apiConfig, db)
+		httpServer, err := api.NewServer(apiConfig, db)
+		if err != nil {
+			log.Fatal("Couldn't start HTTP server:", "HTTP001", err)
+		}
+		httpServer.Start()
 	},
 }
 

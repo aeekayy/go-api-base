@@ -16,13 +16,14 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	handlers "github.com/aeekayy/go-api-base/pkg/api/handlers"
+	"github.com/aeekayy/go-api-base/pkg/config"
 )
 
 const (
-	allowedOriginHosts = "api.aeekay.co,app.aeekay.co"
+	apiVersion = "v2"
 )
 
 var noCacheHeaders = map[string]string{
@@ -32,6 +33,9 @@ var noCacheHeaders = map[string]string{
 	"X-Accel-Expires": "0",
 }
 
+var allowedOriginHosts = map[string]bool{
+	"app.aeekay.co": true,
+}
 
 type Route struct {
 	Name        string
@@ -42,8 +46,8 @@ type Route struct {
 
 type Routes []Route
 
-func NewRouter(db *gorm.DB) *mux.Router {
-	routes := getRoutes(db)
+func NewRouter(config *config.HTTPConfig, db *gorm.DB) *mux.Router {
+	routes := getRoutes(config, db)
 
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range routes {
@@ -65,27 +69,41 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello World!")
 }
 
-func getRoutes(db *gorm.DB) Routes {
+func getRoutes(config *config.HTTPConfig, db *gorm.DB) Routes {
 	return Routes{
 		Route{
 			"Index",
 			"GET",
-			"/v2/",
+			fmt.Sprintf("/%s/", apiVersion),
 			handlers.Index,
 		},
 
 		Route{
 			"Ping",
-			http.MethodGet, 
-			"v2/ping", 
+			http.MethodGet,
+			fmt.Sprintf("/%s/%s", apiVersion, "ping"),
 			pingHandler,
 		},
 
 		Route{
 			"GetEvents",
 			http.MethodGet,
-			"/v2/events",
-			handlers.GetEvents{DB: db, CORS: allowedOriginHosts}.ServeHTTP,
-		}, 
+			fmt.Sprintf("/%s/%s", apiVersion, "events"),
+			handlers.GetEvents{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
+
+		Route{
+			"Login",
+			http.MethodPost,
+			fmt.Sprintf("/%s/%s/%s", apiVersion, "auth", "login"),
+			handlers.PostLogin{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
+
+		Route{
+			"Signup",
+			http.MethodPost,
+			fmt.Sprintf("/%s/%s/%s", apiVersion, "user", "signup"),
+			handlers.PostSignup{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
 	}
 }

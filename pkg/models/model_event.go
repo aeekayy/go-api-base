@@ -13,14 +13,14 @@ package models
 import (
 	"time"
 
-	"github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 )
 
 type Event struct {
-	EventID uuid.UUID `json:"event_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
-	Name string `json:"name,omitempty" gorm:"type:varchar(1024);"`
-	Kvp postgres.Jsonb `json:"kvp" gorm:"default:'{}'"`
-	CreatedDateTime time.Time `json:"created_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
-	UpdatedDateTime time.Time `json:"updated_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
+	EventID         uuid.UUID      `json:"event_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
+	Name            string         `json:"name,omitempty" gorm:"type:varchar(1024);"`
+	Kvp             datatypes.JSON `json:"kvp" gorm:"default:'{}'"`
+	CreatedDateTime time.Time      `json:"created_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
+	UpdatedDateTime time.Time      `json:"updated_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
 }
