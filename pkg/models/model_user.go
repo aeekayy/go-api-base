@@ -20,6 +20,7 @@ import (
 type User struct {
 	UserID          uuid.UUID      `json:"user_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
 	Username        string         `json:"username,omitempty" gorm:"type:varchar(256);"`
+	Password        string         `json:"password,omitempty" gorm:"type:varchar(512);"`
 	Kvp             datatypes.JSON `json:"kvp" gorm:"default:'{}'"`
 	CreatedDateTime time.Time      `json:"created_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`
 	UpdatedDateTime time.Time      `json:"updated_date_time,omitempty" gorm:"default:timezone('utc'::text, now())"`

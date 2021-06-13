@@ -16,6 +16,7 @@ require (
 	github.com/smartystreets/assertions v1.1.0 // indirect
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	gorm.io/datatypes v1.0.1
 	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.21.10

@@ -15,7 +15,6 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
-	"gorm.io/gorm/clause"
 
 	"github.com/aeekayy/go-api-base/pkg/models"
 )
@@ -71,15 +70,11 @@ func (h PostUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// retrieve the result
-	h.DB.Clauses(clause.OnConflict{
+	/*h.DB.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "username"}},
 		DoUpdates: clause.AssignmentColumns([]string{"updated_date_time"}),
-	}).Select("Username", "Kvp").Create(&user)
-	/*
-		if err := h.DB.Raw("select " + postUserQueryCols + " from " + postUserQueryTableName + ";").Scan(&postUser).Error; err != nil {
-			http.Error(w, "Query error", http.StatusBadRequest)
-			return
-		}*/
+	}).Select("Username", "Kvp").Create(&user)*/
+	h.DB.Select("Username", "Password", "Kvp").Create(&user)
 
 	// append the pipeline
 	users = append(users, user)

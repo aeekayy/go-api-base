@@ -12,6 +12,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
@@ -22,20 +23,23 @@ import (
 )
 
 const (
-	postLoginQueryCols = "username"
+	postLoginQueryCols = "username,password"
 	//postLoginQueryDistinctCols = "service_id,environment_id"
 	postLoginQueryTableName = "users"
 )
 
+// PostLogin post login handler object
 type PostLogin struct {
 	BaseHandler
 }
 
+// PostLoginRequest login request object
 type PostLoginRequest struct {
 	Username string `json:"username" yaml:"username"`
 	Password string `json:"password" yaml:"password"`
 }
 
+// PostLoginResponseData login request response object
 type PostLoginResponseData struct {
 	Username string `json:"username" yaml:"username"`
 	Token    string `json:"token" yaml:"token"`
@@ -51,7 +55,7 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Category = CategoryAuth
 
 	var req PostLoginRequest
-	var user models.User
+	var creds models.Credentials
 
 	allowedOrigin, err := ReturnAccessControlAllowOrigin(h.CORS, r.Header.Get("Origin"))
 	if err != nil {
@@ -78,17 +82,23 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// retrieve the result
-	if err := h.DB.Raw("select "+postLoginQueryCols+" from "+postLoginQueryTableName+" WHERE username = ?;", req.Username).Scan(&user).Error; err != nil {
+	if err := h.DB.Raw("select "+postLoginQueryCols+" from "+postLoginQueryTableName+" WHERE username = ?;", req.Username).Scan(&creds).Error; err != nil {
 		http.Error(w, "Query error", http.StatusBadRequest)
 		return
 	}
 
-	if user.Username == "" {
+	if creds.Username == "" {
 		http.Error(w, "Query error", http.StatusBadRequest)
 		return
 	}
 
-	token, err := CreateToken(user.Username, h.Config)
+	// to do. Add login attempt counter
+	if err = bcrypt.CompareHashAndPassword([]byte(creds.Password), []byte(req.Password)); err != nil {
+		http.Error(w, "Incorrect password", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := CreateToken(creds.Username, h.Config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return

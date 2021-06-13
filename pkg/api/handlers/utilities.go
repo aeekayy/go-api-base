@@ -12,6 +12,7 @@ const (
 
 // ReturnAccessControlAllowOrigin returns the appropriate Access-Control-Allow-Origin
 // based on a map of acceptable domains
+// TODO: Account for when the origin is not passed in
 func ReturnAccessControlAllowOrigin(cors map[string]bool, checkURL string) (string, error) {
 	if len(cors) == 0 {
 		return "", errors.New("Invalid Access-Control-Allow-Origin string entered")
@@ -46,6 +47,7 @@ func ReturnAccessControlAllowOrigin(cors map[string]bool, checkURL string) (stri
 		return checkURL, nil
 	}
 
+	fmt.Println(checkURL)
 	fmt.Println(u.Hostname())
 
 	return "", errors.New("Access-Control-Allow-Origin not found")

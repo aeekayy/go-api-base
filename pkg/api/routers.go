@@ -98,5 +98,12 @@ func getRoutes(config *config.HTTPConfig, db *gorm.DB) Routes {
 			fmt.Sprintf("/%s/%s/%s", apiVersion, "auth", "login"),
 			handlers.PostLogin{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
 		},
+
+		Route{
+			"Signup",
+			http.MethodPost,
+			fmt.Sprintf("/%s/%s/%s", apiVersion, "user", "signup"),
+			handlers.PostSignup{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+		},
 	}
 }
