@@ -26,25 +26,30 @@ const (
 	postSignupQueryTableName = "users"
 )
 
+// PostSignup for user signup handler
 type PostSignup struct {
 	BaseHandler
 }
 
+// PostSignupRequest req object for POST signup
 type PostSignupRequest struct {
 	Username string `json:"username" yaml:"username"`
 	Password string `json:"password" yaml:"password"`
 }
 
+// PostSignupResponseData represents the data object in the response for POST signup
 type PostSignupResponseData struct {
 	Username string `json:"username" yaml:"username"`
 	Token    string `json:"token" yaml:"token"`
 }
 
+// PostSignupResponse response for POST signup
 type PostSignupResponse struct {
 	Status int                    `json:"status" yaml:"status"`
 	Data   PostSignupResponseData `json:"data" yaml:"data"`
 }
 
+// ServeHTTP the handler for POST signup
 func (h PostSignup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Name = "PostSignupRoute"
 	h.Category = CategoryUser
@@ -123,7 +128,7 @@ func (h PostSignup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Data:   response,
 	}
 
-	respJson, err := json.Marshal(resp)
+	respJSON, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Could not retrieve event errors")
 		http.Error(w, "Could not retrieve data", http.StatusUnprocessableEntity)
@@ -131,5 +136,5 @@ func (h PostSignup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(respJson))
+	w.Write([]byte(respJSON))
 }

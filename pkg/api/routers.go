@@ -37,6 +37,8 @@ var allowedOriginHosts = map[string]bool{
 	"app.aeekay.co": true,
 }
 
+// Route handles the routes for the API
+// map a method and pattern to the appropriate handler
 type Route struct {
 	Name        string
 	Method      string
@@ -44,8 +46,10 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
+// Routes slice of routes
 type Routes []Route
 
+// NewRouter returns a new router
 func NewRouter(config *config.HTTPConfig, db *gorm.DB) *mux.Router {
 	routes := getRoutes(config, db)
 
@@ -65,10 +69,7 @@ func NewRouter(config *config.HTTPConfig, db *gorm.DB) *mux.Router {
 	return router
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
-}
-
+// getRoutes gets the routes for this package
 func getRoutes(config *config.HTTPConfig, db *gorm.DB) Routes {
 	return Routes{
 		Route{
@@ -89,21 +90,33 @@ func getRoutes(config *config.HTTPConfig, db *gorm.DB) Routes {
 			"GetEvents",
 			http.MethodGet,
 			fmt.Sprintf("/%s/%s", apiVersion, "events"),
-			handlers.GetEvents{handlers.BaseHandler{DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+			handlers.GetEvents{BaseHandler: handlers.BaseHandler{
+				Config: config,
+				DB:     db,
+				CORS:   allowedOriginHosts,
+			}}.ServeHTTP,
 		},
 
 		Route{
 			"Login",
 			http.MethodPost,
 			fmt.Sprintf("/%s/%s/%s", apiVersion, "auth", "login"),
-			handlers.PostLogin{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+			handlers.PostLogin{BaseHandler: handlers.BaseHandler{
+				Config: config,
+				DB:     db,
+				CORS:   allowedOriginHosts,
+			}}.ServeHTTP,
 		},
 
 		Route{
 			"Signup",
 			http.MethodPost,
 			fmt.Sprintf("/%s/%s/%s", apiVersion, "user", "signup"),
-			handlers.PostSignup{handlers.BaseHandler{Config: config, DB: db, CORS: allowedOriginHosts}}.ServeHTTP,
+			handlers.PostSignup{BaseHandler: handlers.BaseHandler{
+				Config: config,
+				DB:     db,
+				CORS:   allowedOriginHosts,
+			}}.ServeHTTP,
 		},
 	}
 }

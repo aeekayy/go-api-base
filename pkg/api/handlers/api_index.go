@@ -14,6 +14,7 @@ import (
 	"net/http"
 )
 
+// Index main function for the API. Returns ok status
 func Index(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

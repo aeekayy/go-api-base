@@ -17,6 +17,7 @@ import (
 	"gorm.io/datatypes"
 )
 
+// Event represents an event for cron jobs
 type Event struct {
 	EventID         uuid.UUID      `json:"event_id,omitempty" gorm:"primary_key;default:uuid_generate_v4();not null;"`
 	Name            string         `json:"name,omitempty" gorm:"type:varchar(1024);"`

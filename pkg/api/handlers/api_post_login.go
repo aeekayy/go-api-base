@@ -45,11 +45,13 @@ type PostLoginResponseData struct {
 	Token    string `json:"token" yaml:"token"`
 }
 
+// PostLoginResponse returns a response object with status and data
 type PostLoginResponse struct {
 	Status int                   `json:"status" yaml:"status"`
 	Data   PostLoginResponseData `json:"data" yaml:"data"`
 }
 
+// ServeHTTP handler for PostLogin
 func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Name = "PostLoginRoute"
 	h.Category = CategoryAuth
@@ -116,7 +118,7 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Data:   response,
 	}
 
-	respJson, err := json.Marshal(resp)
+	respJSON, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Could not retrieve event errors")
 		http.Error(w, "Could not retrieve data", http.StatusUnprocessableEntity)
@@ -124,9 +126,10 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(respJson))
+	w.Write([]byte(respJSON))
 }
 
+// CreateToken creates a signed JWT for user login
 func CreateToken(username string, config *config.HTTPConfig) (string, error) {
 	log.Info(username)
 	jwtWrapper := auth.JwtWrapper{

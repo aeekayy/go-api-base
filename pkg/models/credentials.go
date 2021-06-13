@@ -12,6 +12,7 @@ package models
 
 import ()
 
+// Credentials represents service credentials
 type Credentials struct {
 	Username string `json:"username,omitempty" gorm:"type:varchar(256);"`
 	Password string `json:"password,omitempty" gorm:"type:varchar(512);"`
