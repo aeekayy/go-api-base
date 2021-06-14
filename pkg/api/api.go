@@ -89,7 +89,7 @@ func AddRouter(config *apiConfig.HTTPConfig, db *gorm.DB) (*mux.Router, error) {
 
 	cors := gorillaHandlers.CORS(
 		gorillaHandlers.AllowedHeaders([]string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}),
-		gorillaHandlers.AllowedOrigins([]string{"api.aeekay.co", "app.aeekay.co"}),
+		gorillaHandlers.AllowedOrigins([]string{"api.aeekay.co", "app.aeekay.co", "localhost", "localhost:8080"}),
 		gorillaHandlers.AllowCredentials(),
 		gorillaHandlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 	)
