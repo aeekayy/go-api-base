@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/aeekayy/go-api-base/pkg/config"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	//log "github.com/sirupsen/logrus"
 )
 
 // BaseHandler This is the base handler all the handlers extend
@@ -28,18 +31,6 @@ func NewBaseHandler(db *gorm.DB, cors map[string]bool) BaseHandler {
 	}
 }
 
-// WriteResponse writes a response back to the user
-func (b *BaseHandler) WriteResponse(w http.ResponseWriter, reqCtx *ReqContext) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// w.Header().Add("X-Correlation-Id", reqCtx.Correlation)
-
-	//if reqCtx.HTTPReply != nil {
-	//	if err := json.NewEncoder(w).Encode(reqCtx.HTTPReply); err != nil {
-	//		log.Errorf("%s %s Error encoding response: %v", b.Name, reqCtx.Correlation, err)
-	//	}
-	//}
-}
-
 // ReqContext object for the context of a request
 type ReqContext struct {
 	ErrorCode   string `json:"errorCode"`
@@ -48,4 +39,23 @@ type ReqContext struct {
 	HTTPStatusCode int `json:"httpStatus"`
 	// Reply can be any type convertible to valid JSON
 	HTTPReply interface{}
+}
+
+// WriteJSON writes a JSON response or an error if mashalling the object fails.
+func (h *BaseHandler) WriteJSON(w http.ResponseWriter, status int, obj interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	// TODO: Add correlation trail
+
+	b, err := json.Marshal(obj)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = fmt.Fprintf(w, `{"error": %s}`, strconv.Quote(err.Error()))
+	} else {
+		w.WriteHeader(status)
+		_, err = w.Write(b)
+
+		if err != nil {
+			log.Errorf("error while writing response %s: %s", h.Name, err)
+		}
+	}
 }

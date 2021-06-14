@@ -57,20 +57,7 @@ func (h PostSignup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var req PostSignupRequest
 	var user models.User
 
-	allowedOrigin, err := ReturnAccessControlAllowOrigin(h.CORS, r.Header.Get("Origin"))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
-	if r.Method == http.MethodOptions {
-		return
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -135,11 +122,5 @@ func (h PostSignup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	_, err = w.Write([]byte(respJSON))
-
-	if err != nil {
-		log.Errorf("error sending response for %s: %s", h.Name, err)
-	}
+	h.WriteJSON(w, http.StatusOK, respJSON)
 }
