@@ -17,8 +17,8 @@ func NewConfig() *DBConfig {
 		Host:        "localhost",
 		Port:        5432,
 		Username:    "postgres",
-		Password:    "postgres",
-		DBName:      "postgres",
+		Password:    "",
+		DBName:      "",
 		SSLMode:     false,
 		AutoMigrate: false,
 	}
