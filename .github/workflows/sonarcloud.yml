@@ -2,6 +2,8 @@ on:
   # Trigger analysis when pushing in master or pull requests, and when creating
   # a pull request.
   push:
+    branches:
+    - "*"
   pull_request:
     types: [opened]
 name: SonarCloud
