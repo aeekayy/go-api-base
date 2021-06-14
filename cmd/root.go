@@ -80,9 +80,9 @@ func initConfig() {
 
 	viper.SetDefault("db.host", "localhost")
 	viper.SetDefault("db.username", "postgres")
-	viper.SetDefault("db.password", "postgres")
+	viper.SetDefault("db.password", "")
 	viper.SetDefault("db.port", 5432)
-	viper.SetDefault("db.dbname", "postgres")
+	viper.SetDefault("db.dbname", "")
 	viper.SetDefault("db.ssl_mode", false)
 	viper.SetDefault("db.auto_migrate", false)
 

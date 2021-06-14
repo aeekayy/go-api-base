@@ -126,7 +126,12 @@ func (h PostLogin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(respJSON))
+
+	_, err = w.Write([]byte(respJSON))
+
+	if err != nil {
+		log.Errorf("error sending response for %s: %s", h.Name, err)
+	}
 }
 
 // CreateToken creates a signed JWT for user login

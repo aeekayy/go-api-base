@@ -131,5 +131,9 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(`{"alive": true}`))
+	_, err := w.Write([]byte(`{"alive": true}`))
+
+	if err != nil {
+		log.Errorf("error sending response for %s: %s", "GetPing", err)
+	}
 }
