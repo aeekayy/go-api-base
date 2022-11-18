@@ -27,7 +27,7 @@ jobs:
         with:
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v2
+        uses: cycjimmy/semantic-release-action@v3
         with:
           extra_plugins: |
             "@semantic-release/commit-analyzer"
